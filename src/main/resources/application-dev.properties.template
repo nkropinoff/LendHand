@@ -1,0 +1,4 @@
+# Скопируйте этот файл в application-dev.properties и заполните своими данными
+spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE_NAME
+spring.datasource.username=YOUR_LOGIN
+spring.datasource.password=YOUR_PASSWORD
