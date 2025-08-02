@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/auth")
@@ -17,23 +18,36 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerPage(Model model) {
-        model.addAttribute("userDto", new UserRegistrationDto());
-        model.addAttribute("registrationSuccess", false);
+
+        if (!model.containsAttribute("userDto")) {
+            model.addAttribute("userDto", new UserRegistrationDto());
+        }
+
         return "registration";
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("userDto") UserRegistrationDto userDto, BindingResult bindingResult, Model model) {
+    public String registerUser(@Valid @ModelAttribute("userDto") UserRegistrationDto userDto, BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("registrationSuccess", false);
-            return "registration";
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
+            redirectAttributes.addFlashAttribute("userDto", userDto);
+            return "redirect:/auth/register";
         }
 
         // ...
 
-        model.addAttribute("registrationSuccess", true);
-        model.addAttribute("userEmail", userDto.getEmail());
-        return "registration";
+        redirectAttributes.addFlashAttribute("userEmail", userDto.getEmail());
+        return "redirect:/auth/register/success";
+    }
+
+    @GetMapping("/register/success")
+    public String registerSuccessPage(@ModelAttribute("userEmail") String userEmail) {
+        if (userEmail == null || userEmail.isEmpty()) {
+            return "redirect:/auth/register";
+        }
+        return "registration-success";
     }
 
 }

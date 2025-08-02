@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация завершена - LendHand</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-form-card success-card">
+            <div class="success-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#10b981"/>
+                    <path d="m9 12 2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <h1 class="auth-title">Почти готово!</h1>
+
+            <p class="auth-subtitle">
+                На адрес <strong th:text="${userEmail}">you@example.com</strong> отправлено письмо-подтверждение.
+                <br><br>
+                <strong>Откройте ваш почтовый ящик и перейдите по ссылке в письме</strong>, чтобы завершить регистрацию.
+                <br><br>
+                <em>Если письмо не пришло, проверьте папку "Спам".</em>
+            </p>
+
+            <div class="success-button-container">
+                <a th:href="@{/auth/login}" class="btn-success">На страницу авторизации</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

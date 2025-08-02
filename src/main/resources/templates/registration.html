@@ -14,30 +14,7 @@
 <body>
 
 <div class="auth-container">
-
-    <div th:if="${registrationSuccess}">
-        <div class="auth-form-card success-card">
-            <div class="success-icon">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" fill="#10b981"/>
-                    <path d="m9 12 2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <h1 class="auth-title">Почти готово!</h1>
-            <p class="auth-subtitle">
-                На адрес <strong th:text="${userEmail}">you@example.com</strong> отправлено письмо-подтверждение.
-                <br><br>
-                <strong>Откройте ваш почтовый ящик и перейдите по ссылке в письме</strong>, чтобы завершить регистрацию.
-                <br><br>
-                <em>Если письмо не пришло, проверьте папку "Спам".</em>
-            </p>
-            <div class="success-button-container">
-                <a th:href="@{/auth/login}" class="btn-success">На страницу авторизации</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="auth-form-card" th:if="${!registrationSuccess}">
+    <div class="auth-form-card">
         <h1 class="auth-title">Создание аккаунта</h1>
 
         <div th:if="${registrationError}" class="alert alert-danger" th:text="${registrationError}"></div>
@@ -50,10 +27,20 @@
               method="post"
               novalidate>
 
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                <ul>
+                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+                </ul>
+            </div>
+
             <div class="form-group" th:classappend="${#fields.hasErrors('username')} ? 'has-error'">
                 <label for="username">Имя пользователя</label>
-                <input th:field="*{username}" type="text" id="username" placeholder="username"
-                       data-min="3" data-max="32"
+                <input th:field="*{username}"
+                       type="text"
+                       id="username"
+                       placeholder="username"
+                       data-min="3"
+                       data-max="32"
                        data-msg-required="Пожалуйста, укажите имя пользователя."
                        data-msg-length="Длина имени пользователя — от 3 до 32 символов.">
                 <span class="error-message"
@@ -63,7 +50,10 @@
 
             <div class="form-group" th:classappend="${#fields.hasErrors('email')} ? 'has-error'">
                 <label for="email">Электронная почта</label>
-                <input th:field="*{email}" type="email" id="email" placeholder="you@example.com"
+                <input th:field="*{email}"
+                       type="email"
+                       id="email"
+                       placeholder="you@example.com"
                        data-msg-required="Укажите адрес вашей электронной почты."
                        data-msg-email="Проверьте правильность адреса электронной почты.">
                 <span class="error-message"
@@ -73,8 +63,12 @@
 
             <div class="form-group" th:classappend="${#fields.hasErrors('password')} ? 'has-error'">
                 <label for="password">Пароль</label>
-                <input th:field="*{password}" type="password" id="password" placeholder="••••••••"
-                       data-min="8" data-max="32"
+                <input th:field="*{password}"
+                       type="password"
+                       id="password"
+                       placeholder="••••••••"
+                       data-min="8"
+                       data-max="32"
                        data-msg-required="Пожалуйста, придумайте пароль."
                        data-msg-length="Пароль должен содержать от 8 до 32 символов">
                 <span class="error-message"
