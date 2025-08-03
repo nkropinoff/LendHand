@@ -28,14 +28,25 @@ public class EmailVerificationToken {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
+
     public EmailVerificationToken(User user, int expirationHours) {
         this.user = user;
         this.token = UUID.randomUUID().toString();
         this.expiresAt = LocalDateTime.now().plusHours(expirationHours);
     }
 
+    public boolean isConfirmed() {
+        return this.confirmedAt != null;
+    }
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public void confirm() {
+        this.confirmedAt = LocalDateTime.now();
     }
 
     @Override
