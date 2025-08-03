@@ -37,32 +37,25 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("userDto") UserRegistrationDto userDto, BindingResult bindingResult,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes, Model model) {
 
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
-            redirectAttributes.addFlashAttribute("userDto", userDto);
-            return "redirect:/auth/register";
+            model.addAttribute("userDto", userDto);
+            return "registration";
         }
 
         try {
             User user = userService.registerUser(userDto);
-
             redirectAttributes.addFlashAttribute("userEmail", user.getEmail());
-            redirectAttributes.addFlashAttribute("username", user.getUsername());
             return "redirect:/auth/register/success";
+
         } catch (UserAlreadyExistsException e) {
             bindingResult.reject("registration.error", e.getMessage());
+            return "registration";
 
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
-            redirectAttributes.addFlashAttribute("userDto", userDto);
-            return "redirect:/auth/register";
         } catch (Exception e) {
             bindingResult.reject("registration.error", "Произошла ошибка при регистрации. Попробуйте позже.");
-
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
-            redirectAttributes.addFlashAttribute("userDto", userDto);
-            return "redirect:/auth/register";
+            return "registration";
         }
     }
 

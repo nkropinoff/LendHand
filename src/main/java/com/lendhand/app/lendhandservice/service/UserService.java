@@ -48,7 +48,6 @@ public class UserService {
         );
 
         user = userRepository.save(user);
-
         generateAndSendVerificationToken(user);
 
         return user;
