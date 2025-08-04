@@ -11,8 +11,11 @@ import com.lendhand.app.lendhandservice.repository.EmailVerificationTokenReposit
 import com.lendhand.app.lendhandservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -21,15 +24,16 @@ public class UserService {
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // private final EmailService emailService;
+    private final EmailService emailService;
 
     private static final int TOKEN_EXPIRATION_HOURS = 24;
 
     @Autowired
-    public UserService(UserRepository userRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public User registerUser(UserRegistrationDto userRegistrationDto) {
@@ -60,7 +64,7 @@ public class UserService {
         EmailVerificationToken emailVerificationToken = new EmailVerificationToken(user, TOKEN_EXPIRATION_HOURS);
         emailVerificationTokenRepository.save(emailVerificationToken);
 
-        // emailService.sendVerificationEmail(...)
+        emailService.sendVerificationEmail(user, emailVerificationToken.getToken());
     }
 
     public User verifyEmailToken(String tokenValue) {
@@ -68,11 +72,12 @@ public class UserService {
                 .orElseThrow(() -> new TokenNotFoundException("Токен подтверждения не найден."));
 
         if (emailVerificationToken.isExpired()) {
+            emailVerificationTokenRepository.delete(emailVerificationToken);
             throw new TokenExpiredException("Срок действия ссылки истек. Запросите повторную отправку письма подтверждения.");
         }
 
         if (emailVerificationToken.isConfirmed()) {
-            throw new TokenExpiredException("Эта ссылка уже была использована для подтверждения аккаунта.");
+            throw new IllegalStateException("Эта ссылка уже была использована для подтверждения аккаунта.");
         }
 
         User user = emailVerificationToken.getUser();
@@ -85,29 +90,11 @@ public class UserService {
         return user;
     }
 
-    public void resendVerificationEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с email " + email + " не найден"));
-
-        if (user.isEmailVerified()) {
-            throw new IllegalStateException("Email уже подтвержден.");
-        }
-
-        generateAndSendVerificationToken(user);
+    @Async
+    public void requestResendVerificationEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        userOptional.ifPresent(user -> {
+            if (!user.isEmailVerified()) generateAndSendVerificationToken(user);
+        });
     }
-
-
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElse(null);
-    }
-
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
 }
