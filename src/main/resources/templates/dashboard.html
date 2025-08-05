@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель управления</title>
+    <link rel="stylesheet" th:href="@{/css/landing.css}">
+</head>
+<body>
+<div class="container" style="padding-top: 50px; text-align: center;">
+    <h1 class="hero-title">Добро пожаловать!</h1>
+    <p class="hero-subtitle">Вы успешно аутентифицированы и находитесь на защищенной странице.</p>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-primary">Выйти</button>
+    </form>
+</div>
+</body>
+</html>
