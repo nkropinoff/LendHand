@@ -30,7 +30,7 @@ public class EmailService {
     @Async
     public void sendVerificationEmail(User user, String token) {
         try {
-            String verificationUrl = "http://localhost:8080/verification?token=" + token;
+            String verificationUrl = "http://localhost:8080/verify?token=" + token;
 
             Context context = new Context();
             context.setVariable("username", user.getUsername());

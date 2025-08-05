@@ -40,8 +40,9 @@ public class AuthController {
                                RedirectAttributes redirectAttributes, Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("userDto", userDto);
-            return "registration";
+            redirectAttributes.addFlashAttribute("userDto", userDto);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
+            return "redirect:/auth/register";
         }
 
         try {
@@ -50,8 +51,10 @@ public class AuthController {
             return "redirect:/auth/register/success";
 
         } catch (UserAlreadyExistsException e) {
-            bindingResult.reject("registration.error", e.getMessage());
-            return "registration";
+            bindingResult.rejectValue("email", "user.exists", e.getMessage());
+            redirectAttributes.addFlashAttribute("userDto", userDto);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
+            return "redirect:/auth/register";
 
         } catch (Exception e) {
             bindingResult.reject("registration.error", "Произошла ошибка при регистрации. Попробуйте позже.");
@@ -60,11 +63,39 @@ public class AuthController {
     }
 
     @GetMapping("/register/success")
-    public String registerSuccessPage(@ModelAttribute("userEmail") String userEmail) {
-        if (userEmail == null || userEmail.isEmpty()) {
+    public String registerSuccessPage(Model model) {
+        if (!model.containsAttribute("userEmail")) {
             return "redirect:/auth/register";
         }
         return "registration-success";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
+
+    @GetMapping("/verify")
+    public String verifyAccount(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
+        try {
+            userService.verifyEmailToken(token);
+            redirectAttributes.addFlashAttribute("verificationSuccess", "Ваш аккаунт успешно подтвержден! Теперь вы можете войти.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("verificationError", e.getMessage());
+        }
+        return "redirect:/auth/login";
+    }
+
+    @GetMapping("/resend-verification")
+    public String resendVerificationPage() {
+        return "resend-verification";
+    }
+
+    @PostMapping("/resend-verification")
+    public String handleResendVerification(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        userService.requestResendVerificationEmail(email);
+        redirectAttributes.addFlashAttribute("resendSuccess", "Если аккаунт с таким email существует и не подтвержден, мы отправили новое письмо.");
+        return "redirect:/auth/login";
     }
 
 }
