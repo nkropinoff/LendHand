@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход - LendHand</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-form-card">
+        <h1 class="auth-title">Вход в аккаунт</h1>
+
+        <div th:if="${param.error}" class="alert alert-danger">Неверный логин или пароль.</div>
+        <div th:if="${param.logout}" class="alert alert-success">Вы успешно вышли из системы.</div>
+        <div th:if="${verificationSuccess}" class="alert alert-success" th:text="${verificationSuccess}"></div>
+        <div th:if="${verificationError}" class="alert alert-danger" th:text="${verificationError}"></div>
+        <div th:if="${resendSuccess}" class="alert alert-success" th:text="${resendSuccess}"></div>
+
+        <form th:action="@{/auth/login}" method="post">
+            <div class="form-group">
+                <label for="username">Электронная почта</label>
+                <input type="email" id="username" name="username" placeholder="you@example.com" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit">Войти</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Нет аккаунта? <a th:href="@{/auth/register}">Зарегистрироваться</a></p>
+            <p><a th:href="@{/auth/resend-verification}">Проблемы со входом?</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Повторная отправка письма - LendHand</title>
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div class="auth-container">
+  <div class="auth-form-card">
+    <h1 class="auth-title">Повторная отправка</h1>
+    <p class="auth-subtitle">Введите ваш email, и если он есть в нашей системе, мы отправим письмо для подтверждения еще раз.</p>
+
+    <form th:action="@{/auth/resend-verification}" method="post">
+      <div class="form-group">
+        <label for="email">Электронная почта</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autofocus>
+      </div>
+      <button type="submit" class="btn-submit">Отправить письмо</button>
+    </form>
+    <div class="auth-footer">
+      <p><a th:href="@{/auth/login}">Вернуться на страницу входа</a></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
