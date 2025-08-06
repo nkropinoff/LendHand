@@ -3,9 +3,11 @@ package com.lendhand.app.lendhandservice.controller;
 
 import com.lendhand.app.lendhandservice.dto.UserRegistrationDto;
 import com.lendhand.app.lendhandservice.entity.User;
-import com.lendhand.app.lendhandservice.exception.UserAlreadyExistsException;
+import com.lendhand.app.lendhandservice.exception.EmailAlreadyExistsException;
+import com.lendhand.app.lendhandservice.exception.UsernameAlreadyExistsException;
 import com.lendhand.app.lendhandservice.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,8 +52,14 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("userEmail", user.getEmail());
             return "redirect:/auth/register/success";
 
-        } catch (UserAlreadyExistsException e) {
+        } catch (EmailAlreadyExistsException e) {
             bindingResult.rejectValue("email", "user.exists", e.getMessage());
+            redirectAttributes.addFlashAttribute("userDto", userDto);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
+            return "redirect:/auth/register";
+
+        } catch (UsernameAlreadyExistsException e) {
+            bindingResult.rejectValue("username", "user.exists", e.getMessage());
             redirectAttributes.addFlashAttribute("userDto", userDto);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userDto", bindingResult);
             return "redirect:/auth/register";

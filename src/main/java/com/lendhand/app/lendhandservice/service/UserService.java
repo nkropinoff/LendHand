@@ -3,10 +3,10 @@ package com.lendhand.app.lendhandservice.service;
 import com.lendhand.app.lendhandservice.dto.UserRegistrationDto;
 import com.lendhand.app.lendhandservice.entity.EmailVerificationToken;
 import com.lendhand.app.lendhandservice.entity.User;
+import com.lendhand.app.lendhandservice.exception.EmailAlreadyExistsException;
 import com.lendhand.app.lendhandservice.exception.TokenExpiredException;
 import com.lendhand.app.lendhandservice.exception.TokenNotFoundException;
-import com.lendhand.app.lendhandservice.exception.UserAlreadyExistsException;
-import com.lendhand.app.lendhandservice.exception.UserNotFoundException;
+import com.lendhand.app.lendhandservice.exception.UsernameAlreadyExistsException;
 import com.lendhand.app.lendhandservice.repository.EmailVerificationTokenRepository;
 import com.lendhand.app.lendhandservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -38,11 +38,11 @@ public class UserService {
 
     public User registerUser(UserRegistrationDto userRegistrationDto) {
         if (userRepository.existsByEmail(userRegistrationDto.getEmail())) {
-            throw new UserAlreadyExistsException("Пользователь с email: " + userRegistrationDto.getEmail() + " уже существует");
+            throw new EmailAlreadyExistsException("Пользователь с электронной почтой " + userRegistrationDto.getEmail() + " уже существует.");
         }
 
         if (userRepository.existsByUsername(userRegistrationDto.getUsername())) {
-            throw new UserAlreadyExistsException("Пользователь с username: " + userRegistrationDto.getUsername() + " уже существует");
+            throw new UsernameAlreadyExistsException("Пользователь с именем " + userRegistrationDto.getUsername() + " уже существует.");
         }
 
         User user = new User(
