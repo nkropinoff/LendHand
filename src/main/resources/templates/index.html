@@ -27,10 +27,17 @@
     <div class="container">
         <h1 class="hero-title">Одна маленькая услуга.<br>Одно большое доброе дело.</h1>
         <p class="hero-subtitle">Предлагайте то, что можете, и находите то, что ищете.</p>
-        <div class="hero-actions">
-            <a href="/auth/register" class="btn btn-primary">Начать помогать</a>
-            <a href="#features" class="btn btn-secondary">Узнать больше</a>
+
+        <div class="hero-search-wrapper">
+            <form th:action="@{/listings}" method="get" class="search-form">
+                <input type="search" name="query" class="search-input" placeholder="Что вы ищете?">
+                <button type="submit" class="search-button">Найти</button>
+            </form>
+            <p class="search-cta-text">
+                Или <a th:href="@{/auth/register}">предложите свою услугу</a> и начните помогать другим.
+            </p>
         </div>
+
     </div>
 </header>
 
@@ -40,7 +47,7 @@
         <div class="features-grid">
             <div class="feature-card">
                 <h3>Предлагайте</h3>
-                <p>Разместите объявление о своей услуге или вещи, которую готовы одолжить. Это займет всего минуту.</p>
+                <p>Разместите объявление о своей услуге или вещи, которую хотите предложить другим. Это займет всего минуту.</p>
             </div>
             <div class="feature-card">
                 <h3>Находите</h3>
