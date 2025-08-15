@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,12 +16,41 @@
 <nav class="navbar">
     <div class="container">
         <a href="/" class="brand">LendHand</a>
-        <div class="nav-links">
-            <a href="/auth/login" class="nav-link">Войти</a>
-            <a href="/auth/register" class="nav-button">Регистрация</a>
+
+        <div sec:authorize="!isAuthenticated()" class="nav-links">
+            <a th:href="@{/auth/login}" class="nav-link">Войти</a>
+            <a th:href="@{/auth/register}" class="nav-button">Регистрация</a>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" class="nav-links user-nav">
+            <a href="/profile" class="user-profile-link">
+                <div class="user-avatar-placeholder"></div>
+                <span sec:authentication="principal.username" class="user-name"></span>
+            </a>
+
+            <div class="user-menu-container">
+                <button id="user-menu-button" class="user-menu-button">
+                    <svg viewBox="0 0 100 80" width="20" height="20" fill="#1f2937">
+                        <rect width="100" height="15"></rect>
+                        <rect y="30" width="100" height="15"></rect>
+                        <rect y="60" width="100" height="15"></rect>
+                    </svg>
+                </button>
+                <div id="user-menu-dropdown" class="user-menu-dropdown">
+                    <a href="/profile" class="dropdown-item">Мой профиль</a>
+                    <a href="/offers" class="dropdown-item">Мои предложения</a>
+                    <a href="/chats" class="dropdown-item">Мои чаты</a>
+                    <a href="/settings" class="dropdown-item">Настройки</a>
+                    <div class="dropdown-divider"></div>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="dropdown-item dropdown-item-logout">Выйти</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
+
 
 <header class="hero">
     <div class="container">
@@ -66,6 +95,6 @@
         <p>&copy; 2025 LendHand. Все права защищены.</p>
     </div>
 </footer>
-
+<script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>
