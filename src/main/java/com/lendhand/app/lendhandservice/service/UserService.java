@@ -3,11 +3,13 @@ package com.lendhand.app.lendhandservice.service;
 import com.lendhand.app.lendhandservice.dto.UserRegistrationDto;
 import com.lendhand.app.lendhandservice.entity.EmailVerificationToken;
 import com.lendhand.app.lendhandservice.entity.User;
+import com.lendhand.app.lendhandservice.entity.UserProfile;
 import com.lendhand.app.lendhandservice.exception.EmailAlreadyExistsException;
 import com.lendhand.app.lendhandservice.exception.TokenExpiredException;
 import com.lendhand.app.lendhandservice.exception.TokenNotFoundException;
 import com.lendhand.app.lendhandservice.exception.UsernameAlreadyExistsException;
 import com.lendhand.app.lendhandservice.repository.EmailVerificationTokenRepository;
+import com.lendhand.app.lendhandservice.repository.UserProfileRepository;
 import com.lendhand.app.lendhandservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import java.util.Optional;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -29,8 +32,9 @@ public class UserService {
     private static final int TOKEN_EXPIRATION_HOURS = 24;
 
     @Autowired
-    public UserService(UserRepository userRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
@@ -52,6 +56,10 @@ public class UserService {
         );
 
         user = userRepository.save(user);
+
+        UserProfile userProfile = new UserProfile(user);
+        userProfileRepository.save(userProfile);
+
         generateAndSendVerificationToken(user);
 
         return user;
