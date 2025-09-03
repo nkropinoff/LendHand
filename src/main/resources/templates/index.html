@@ -1,100 +1,49 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LendHand - Помогайте и находите помощь</title>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" th:replace="~{fragments/layout :: html(
+        title='Главная страница',
+        content=~{::content},
+        scripts=~{}
+      )}">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<head></head>
 
-    <link rel="stylesheet" th:href="@{/css/landing.css}">
-</head>
 <body>
-
-<nav class="navbar">
-    <div class="container">
-        <a href="/" class="brand">LendHand</a>
-
-        <div sec:authorize="!isAuthenticated()" class="nav-links">
-            <a th:href="@{/auth/login}" class="nav-link">Войти</a>
-            <a th:href="@{/auth/register}" class="nav-button">Регистрация</a>
+<th:block th:fragment="content">
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">Одна маленькая услуга.<br>Одно большое доброе дело.</h1>
+            <p class="hero-subtitle">Предлагайте то, что можете, и находите то, что ищете.</p>
+            <div class="hero-search-wrapper">
+                <form th:action="@{/listings}" method="get" class="search-form">
+                    <input type="search" name="query" class="search-input" placeholder="Что вы ищете?">
+                    <button type="submit" class="search-button">Найти</button>
+                </form>
+                <p class="search-cta-text">
+                    Или <a th:href="@{/auth/register}">предложите свою услугу</a> и начните помогать другим.
+                </p>
+            </div>
         </div>
+    </header>
 
-        <div sec:authorize="isAuthenticated()" class="nav-links user-nav">
-            <a href="/profile" class="user-profile-link">
-                <div class="user-avatar-placeholder"></div>
-                <span sec:authentication="principal.username" class="user-name"></span>
-            </a>
-
-            <div class="user-menu-container">
-                <button id="user-menu-button" class="user-menu-button">
-                    <svg viewBox="0 0 100 80" width="20" height="20" fill="#1f2937">
-                        <rect width="100" height="15"></rect>
-                        <rect y="30" width="100" height="15"></rect>
-                        <rect y="60" width="100" height="15"></rect>
-                    </svg>
-                </button>
-                <div id="user-menu-dropdown" class="user-menu-dropdown">
-                    <a href="/profile" class="dropdown-item">Мой профиль</a>
-                    <a href="/offers" class="dropdown-item">Мои предложения</a>
-                    <a href="/chats" class="dropdown-item">Мои чаты</a>
-                    <a href="/settings" class="dropdown-item">Настройки</a>
-                    <div class="dropdown-divider"></div>
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="dropdown-item dropdown-item-logout">Выйти</button>
-                    </form>
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Как это работает?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Предлагайте</h3>
+                    <p>Разместите объявление о своей услуге или вещи, которую хотите предложить другим. Это займет всего минуту.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Находите</h3>
+                    <p>Используйте поиск, чтобы найти нужную помощь рядом с вами. От печати документов до дрели на вечер.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Общайтесь</h3>
+                    <p>Связывайтесь с другими пользователями напрямую через безопасный чат, чтобы договориться о деталях.</p>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
-
-
-<header class="hero">
-    <div class="container">
-        <h1 class="hero-title">Одна маленькая услуга.<br>Одно большое доброе дело.</h1>
-        <p class="hero-subtitle">Предлагайте то, что можете, и находите то, что ищете.</p>
-
-        <div class="hero-search-wrapper">
-            <form th:action="@{/listings}" method="get" class="search-form">
-                <input type="search" name="query" class="search-input" placeholder="Что вы ищете?">
-                <button type="submit" class="search-button">Найти</button>
-            </form>
-            <p class="search-cta-text">
-                Или <a th:href="@{/auth/register}">предложите свою услугу</a> и начните помогать другим.
-            </p>
-        </div>
-
-    </div>
-</header>
-
-<section id="features" class="features-section">
-    <div class="container">
-        <h2 class="section-title">Как это работает?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h3>Предлагайте</h3>
-                <p>Разместите объявление о своей услуге или вещи, которую хотите предложить другим. Это займет всего минуту.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Находите</h3>
-                <p>Используйте поиск, чтобы найти нужную помощь рядом с вами. От печати документов до дрели на вечер.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Общайтесь</h3>
-                <p>Связывайтесь с другими пользователями напрямую через безопасный чат, чтобы договориться о деталях.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer class="footer">
-    <div class="container">
-        <p>&copy; 2025 LendHand. Все права защищены.</p>
-    </div>
-</footer>
-<script th:src="@{/js/navbar.js}"></script>
+    </section>
+</th:block>
 </body>
 </html>
