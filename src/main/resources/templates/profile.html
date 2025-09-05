@@ -48,18 +48,18 @@
                     </div>
 
                     <!-- Форма для редактирования (скрыта) -->
-                    <form th:action="@{/profile/update}" th:object="${userProfile}" method="post" class="edit-form" id="edit-form">
+                    <form th:action="@{/profile/update}" th:object="${profileUpdateDto}" method="post" class="edit-form" id="edit-form">
                         <div class="form-group">
                             <label for="avatarUrl">URL аватара</label>
-                            <input type="text" id="avatarUrl" name="avatarUrl" th:value="*{avatarUrl}" placeholder="https://example.com/avatar.jpg">
+                            <input type="text" id="avatarUrl" name="avatarUrl" th:field="*{avatarUrl}" placeholder="https://example.com/avatar.jpg">
                         </div>
                         <div class="form-group">
                             <label for="location">Местоположение</label>
-                            <input type="text" id="location" name="location" th:value="*{location}" placeholder="Город, страна">
+                            <input type="text" id="location" name="location" th:field="*{location}" placeholder="Город, страна">
                         </div>
                         <div class="form-group">
                             <label for="about">О себе</label>
-                            <textarea id="about" name="about" th:text="*{about}" placeholder="Чем вы можете быть полезны?"></textarea>
+                            <textarea id="about" name="about" th:field="*{about}" placeholder="Чем вы можете быть полезны?"></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
