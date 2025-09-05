@@ -1,11 +1,13 @@
 package com.lendhand.app.lendhandservice.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
 @Setter
+@Getter
 @Entity
 @Table(name = "users")
 public class User {
@@ -36,22 +38,6 @@ public class User {
 
     public void verifyEmail() {
         this.emailVerified = true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
     }
 
     public boolean isEmailVerified() {

@@ -1,5 +1,6 @@
 package com.lendhand.app.lendhandservice.service;
 
+import com.lendhand.app.lendhandservice.dto.UserProfileUpdateDto;
 import com.lendhand.app.lendhandservice.dto.UserRegistrationDto;
 import com.lendhand.app.lendhandservice.entity.EmailVerificationToken;
 import com.lendhand.app.lendhandservice.entity.User;
@@ -14,6 +15,7 @@ import com.lendhand.app.lendhandservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -104,5 +106,20 @@ public class UserService {
         userOptional.ifPresent(user -> {
             if (!user.isEmailVerified()) generateAndSendVerificationToken(user);
         });
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь с email: " + email + " не найден"));
+    }
+
+    public void updateUserProfile(String email, UserProfileUpdateDto userProfileUpdateDto) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь с email: " + email + " не найден"));
+        UserProfile userProfile = user.getUserProfile();
+
+        userProfile.setLocation(userProfileUpdateDto.getLocation());
+        userProfile.setAbout(userProfileUpdateDto.getAbout());
+        userProfile.setAvatarUrl(userProfileUpdateDto.getAvatarUrl());
+
+        userProfileRepository.save(userProfile);
     }
 }
