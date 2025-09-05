@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: html(
+        title='Мой профиль',
+        styles=~{::styles},
+        content=~{::content},
+        scripts=~{::scripts}
+      )}">
+
+<head>
+    <th:block th:fragment="styles">
+        <!-- Подключаем стили для страницы профиля -->
+        <link rel="stylesheet" th:href="@{/css/profile.css}">
+    </th:block>
+</head>
+
+<body>
+<th:block th:fragment="content">
+    <main class="profile-container">
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <div class="profile-card">
+            <!-- Левая колонка с аватаром и основной информацией -->
+            <aside class="profile-sidebar">
+                <div class="profile-avatar" th:styleappend="${userProfile.avatarUrl != null ? 'background-image: url(' + userProfile.avatarUrl + ')' : ''}"></div>
+                <h2 class="profile-username" th:text="${user.username}">username</h2>
+                <p class="profile-email" th:text="${user.email}">user@example.com</p>
+            </aside>
+
+            <!-- Правая колонка с редактируемой информацией -->
+            <div class="profile-main">
+                <section class="profile-section" id="profile-edit-section">
+
+                    <div class="profile-section-header">
+                        <h1 class="profile-section-title">Информация о себе</h1>
+                        <button class="edit-button" id="edit-profile-btn">Редактировать</button>
+                    </div>
+
+                    <!-- Блок для просмотра информации -->
+                    <div class="profile-section-content" id="view-mode">
+                        <p th:if="${userProfile.location}"><strong>Местоположение:</strong> <span th:text="${userProfile.location}"></span></p>
+                        <p th:unless="${userProfile.location}" class="placeholder-text">Местоположение не указано</p>
+
+                        <p th:if="${userProfile.about}" th:text="${userProfile.about}" style="margin-top: 15px;"></p>
+                        <p th:unless="${userProfile.about}" class="placeholder-text" style="margin-top: 15px;">Расскажите немного о себе...</p>
+                    </div>
+
+                    <!-- Форма для редактирования (скрыта) -->
+                    <form th:action="@{/profile/update}" th:object="${userProfile}" method="post" class="edit-form" id="edit-form">
+                        <div class="form-group">
+                            <label for="avatarUrl">URL аватара</label>
+                            <input type="text" id="avatarUrl" name="avatarUrl" th:value="*{avatarUrl}" placeholder="https://example.com/avatar.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Местоположение</label>
+                            <input type="text" id="location" name="location" th:value="*{location}" placeholder="Город, страна">
+                        </div>
+                        <div class="form-group">
+                            <label for="about">О себе</label>
+                            <textarea id="about" name="about" th:text="*{about}" placeholder="Чем вы можете быть полезны?"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Отмена</button>
+                        </div>
+                    </form>
+
+                </section>
+            </div>
+        </div>
+    </main>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <!-- Подключаем скрипт для страницы профиля -->
+    <script th:src="@{/js/profile.js}"></script>
+</th:block>
+
+</body>
+</html>
