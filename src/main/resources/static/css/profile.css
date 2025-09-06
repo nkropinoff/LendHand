@@ -5,6 +5,7 @@
     padding: 20px;
 }
 
+/* две колонки грида тянутся на одинаковую высоту */
 .profile-card {
     background-color: var(--white-color);
     border: 1px solid var(--border-color);
@@ -13,10 +14,14 @@
     display: grid;
     grid-template-columns: 200px 1fr;
     gap: 40px;
-    align-items: flex-start;
+    align-items: stretch; /* обеспечивает высоту правой колонки до низа */
 }
 
+/* левая колонка: жёсткое центрирование содержимого под аватаром */
 .profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
 }
 
@@ -34,112 +39,104 @@
 .profile-username {
     font-size: 1.5em;
     font-weight: 800;
-    margin: 0;
+    margin: 0.5rem 0 0;
+    text-align: center;
 }
 
 .profile-email {
     font-size: 1em;
     color: var(--text-light);
     word-break: break-all;
+    margin: 0.5rem 0 0;
+    text-align: center;
 }
 
+/* правая колонка: вертикальная линия до низа */
 .profile-main {
     border-left: 1px solid var(--border-color);
     padding-left: 40px;
 }
 
-.profile-section {
-    margin-bottom: 30px;
-}
-
+/* секция и заголовок */
+.profile-section { margin-bottom: 30px; }
 .profile-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
 }
+.profile-section-title { font-size: 1.7em; font-weight: 800; margin: 0; }
 
-.profile-section-title {
-    font-size: 1.7em;
+/* строгая левосторонняя вёрстка блока просмотра */
+.profile-section-content { text-align: left; }
+
+/* список полей: каждая пара — отдельная строка, своя ширина метки */
+.profile-fields { margin: 0; }
+.profile-fields .profile-row {
+    display: grid;
+    grid-template-columns: max-content 1fr; /* ширина метки равна её содержимому в этой строке */
+    column-gap: 12px;
+    align-items: start;
+}
+.profile-fields .profile-row + .profile-row { margin-top: 12px; }
+
+.profile-fields dt {
     font-weight: 800;
+    color: var(--text-dark);
     margin: 0;
 }
-
-.edit-button {
-    background: none;
-    border: 1px solid var(--border-color);
-    color: var(--text-light);
-    padding: 8px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
-    font-family: 'Manrope', sans-serif;
-    transition: all 0.3s;
-}
-
-.edit-button:hover {
-    background-color: var(--background-color);
-    color: var(--text-dark);
-    border-color: #d1d5db;
-}
-
-.profile-section-content p {
-    color: var(--text-dark);
-    line-height: 1.6;
-    white-space: pre-wrap;
+.profile-fields dd {
     margin: 0;
+    color: var(--text-dark);
 }
 
-.placeholder-text {
-    color: var(--text-light);
-    font-style: italic;
-}
+.placeholder-text { color: var(--text-light); font-style: italic; }
 
-/* Стили для формы редактирования */
-.edit-form {
-    display: none; /* Скрыта по умолчанию */
-}
+/* форма редактирования (скрыта по умолчанию, как и было) */
+.edit-form { display: none; }
 
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 1em;
     transition: border-color .3s, box-shadow .3s;
     font-family: 'Manrope', sans-serif;
 }
-
-.form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-}
+.form-group textarea { min-height: 120px; resize: vertical; }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, .2);
 }
 
-.form-actions {
-    display: flex;
-    gap: 10px;
+.form-actions { display: flex; gap: 10px; }
+
+/* Ошибки валидации на форме профиля */
+.form-group .error-message {
+    display: block;
+    color: #ef4444;            /* тот же красный, что в auth.css */
+    font-size: .875em;
+    margin-top: 5px;
 }
 
+.form-group.has-error input,
+.form-group.has-error textarea {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .25);
+}
+
+
+/* кнопки — те же классы, что и на сайте */
 .btn {
-    width: auto;
+    display: inline-block;
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
@@ -147,23 +144,12 @@
     font-weight: 700;
     cursor: pointer;
     transition: background .3s;
+    font-family: 'Manrope', sans-serif;
 }
-
-.btn-primary {
-    background: var(--primary);
-    color: var(--white);
-}
-.btn-primary:hover {
-    background: var(--primary-hover);
-}
-
-.btn-secondary {
-    background: var(--border);
-    color: var(--text-dark);
-}
-.btn-secondary:hover {
-    background: #d1d5db;
-}
+.btn-primary { background: var(--primary-color); color: var(--white-color); }
+.btn-primary:hover { background: var(--primary-hover-color); }
+.btn-secondary { background: var(--border-color); color: var(--text-dark); }
+.btn-secondary:hover { background: #d1d5db; }
 
 @media (max-width: 768px) {
     .profile-card {
@@ -177,3 +163,14 @@
         padding-top: 30px;
     }
 }
+
+/* Фиксированная высота textarea, запрет ручного ресайза */
+.form-group textarea {
+    /* rows управляет высотой по строкам; ниже — контроль поведения при переполнении */
+    resize: none;          /* запрещает растягивание мышью */
+    overflow-y: auto;      /* аккуратный внутренний скролл при длинном тексте */
+    white-space: pre-wrap; /* переносим строки и сохраняем переводы */
+    word-break: break-word;
+    line-height: 1.5;      /* комфортная читабельность */
+}
+

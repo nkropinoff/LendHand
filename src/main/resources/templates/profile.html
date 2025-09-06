@@ -9,7 +9,6 @@
 
 <head>
     <th:block th:fragment="styles">
-        <!-- Подключаем стили для страницы профиля -->
         <link rel="stylesheet" th:href="@{/css/profile.css}">
     </th:block>
 </head>
@@ -22,50 +21,74 @@
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
         <div class="profile-card">
-            <!-- Левая колонка с аватаром и основной информацией -->
+            <!-- Левая колонка: аватар, username, email -->
             <aside class="profile-sidebar">
-                <div class="profile-avatar" th:styleappend="${userProfile.avatarUrl != null ? 'background-image: url(' + userProfile.avatarUrl + ')' : ''}"></div>
+                <div class="profile-avatar"
+                     th:styleappend="${userProfile != null && userProfile.avatarUrl != null ? 'background-image: url(' + userProfile.avatarUrl + ')' : ''}"></div>
                 <h2 class="profile-username" th:text="${user.username}">username</h2>
                 <p class="profile-email" th:text="${user.email}">user@example.com</p>
             </aside>
 
-            <!-- Правая колонка с редактируемой информацией -->
+            <!-- Правая колонка: информация -->
             <div class="profile-main">
                 <section class="profile-section" id="profile-edit-section">
 
                     <div class="profile-section-header">
                         <h1 class="profile-section-title">Информация о себе</h1>
-                        <button class="edit-button" id="edit-profile-btn">Редактировать</button>
+                        <button class="btn btn-secondary" id="edit-profile-btn">Редактировать</button>
                     </div>
 
-                    <!-- Блок для просмотра информации -->
+                    <!-- Просмотр: каждая пара dt/dd — отдельная строка грида -->
                     <div class="profile-section-content" id="view-mode">
-                        <p th:if="${userProfile.location}"><strong>Местоположение:</strong> <span th:text="${userProfile.location}"></span></p>
-                        <p th:unless="${userProfile.location}" class="placeholder-text">Местоположение не указано</p>
+                        <dl class="profile-fields">
+                            <div class="profile-row">
+                                <dt>Местоположение:</dt>
+                                <dd th:if="${userProfile != null and userProfile.location != null}" th:text="${userProfile.location}">—</dd>
+                                <dd th:unless="${userProfile != null and userProfile.location != null}" class="placeholder-text">
+                                    Местоположение не указано
+                                </dd>
+                            </div>
 
-                        <p th:if="${userProfile.about}" th:text="${userProfile.about}" style="margin-top: 15px;"></p>
-                        <p th:unless="${userProfile.about}" class="placeholder-text" style="margin-top: 15px;">Расскажите немного о себе...</p>
+                            <div class="profile-row">
+                                <dt>Описание:</dt>
+                                <dd th:if="${userProfile != null and userProfile.about != null}" th:text="${userProfile.about}">—</dd>
+                                <dd th:unless="${userProfile != null and userProfile.about != null}" class="placeholder-text">
+                                    Расскажите немного о себе...
+                                </dd>
+                            </div>
+                        </dl>
                     </div>
 
-                    <!-- Форма для редактирования (скрыта) -->
+                    <!-- Форма редактирования -->
                     <form th:action="@{/profile/update}" th:object="${profileUpdateDto}" method="post" class="edit-form" id="edit-form">
-                        <div class="form-group">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                        <div class="form-group" th:classappend="${#fields.hasErrors('avatarUrl')} ? ' has-error'">
                             <label for="avatarUrl">URL аватара</label>
-                            <input type="text" id="avatarUrl" name="avatarUrl" th:field="*{avatarUrl}" placeholder="https://example.com/avatar.jpg">
+                            <input type="text" id="avatarUrl" name="avatarUrl" th:field="*{avatarUrl}" placeholder="https://example.com/avatar.jpg" maxlength="255">
+                            <span class="error-message" th:if="${#fields.hasErrors('avatarUrl')}" th:errors="*{avatarUrl}"></span>
                         </div>
-                        <div class="form-group">
+
+                        <div class="form-group" th:classappend="${#fields.hasErrors('location')} ? ' has-error'">
                             <label for="location">Местоположение</label>
-                            <input type="text" id="location" name="location" th:field="*{location}" placeholder="Город, страна">
+                            <input type="text" id="location" name="location" th:field="*{location}" placeholder="Город, страна" maxlength="100">
+                            <span class="error-message" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></span>
                         </div>
-                        <div class="form-group">
-                            <label for="about">О себе</label>
-                            <textarea id="about" name="about" th:field="*{about}" placeholder="Чем вы можете быть полезны?"></textarea>
+
+                        <div class="form-group" th:classappend="${#fields.hasErrors('about')} ? ' has-error'">
+                            <label for="about">Описание</label>
+                            <!-- фиксированная высота: 6 строк, запрет растягивания в CSS; ограничение 500 символов -->
+                            <textarea id="about" name="about" th:field="*{about}" placeholder="Чем вы можете быть полезны?" rows="6" maxlength="500"></textarea>
+                            <span class="error-message" th:if="${#fields.hasErrors('about')}" th:errors="*{about}"></span>
                         </div>
+
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                             <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Отмена</button>
                         </div>
                     </form>
+
+
 
                 </section>
             </div>
@@ -74,7 +97,6 @@
 </th:block>
 
 <th:block th:fragment="scripts">
-    <!-- Подключаем скрипт для страницы профиля -->
     <script th:src="@{/js/profile.js}"></script>
 </th:block>
 
