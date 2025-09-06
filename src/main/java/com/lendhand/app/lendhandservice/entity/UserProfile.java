@@ -14,8 +14,13 @@ public class UserProfile {
     @Id
     private Long id;
 
+    @Column(length = 100)
     private String location;
+
+    @Column(length = 500)
     private String about;
+
+    @Column(length = 255)
     private String avatarUrl;
 
     @OneToOne(fetch = FetchType.LAZY)
