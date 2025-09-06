@@ -32,7 +32,8 @@ public class ProfileController {
 
     @GetMapping
     public String profilePage(Model model, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        User user = customUserDetails.getUser();
+        String email = customUserDetails.getUsername();
+        User user = userService.findUserByEmail(email);
         UserProfile userProfile = user.getUserProfile();
 
         model.addAttribute("user", user);
@@ -40,9 +41,11 @@ public class ProfileController {
 
         if (!model.containsAttribute("profileUpdateDto")) {
             UserProfileUpdateDto userProfileUpdateDto = new UserProfileUpdateDto();
-            userProfileUpdateDto.setLocation(userProfile.getLocation());
-            userProfileUpdateDto.setAbout(userProfile.getAbout());
-            userProfileUpdateDto.setAvatarUrl(userProfile.getAvatarUrl());
+            if (userProfile != null) {
+                userProfileUpdateDto.setLocation(userProfile.getLocation());
+                userProfileUpdateDto.setAbout(userProfile.getAbout());
+                userProfileUpdateDto.setAvatarUrl(userProfile.getAvatarUrl());
+            }
             model.addAttribute("profileUpdateDto", userProfileUpdateDto);
         }
         return "profile";
@@ -55,6 +58,7 @@ public class ProfileController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.profileUpdateDto", bindingResult);
             redirectAttributes.addFlashAttribute("profileUpdateDto", userProfileUpdateDto);
+            redirectAttributes.addFlashAttribute("errorMessage", "Исправьте ошибки в форме.");
             return "redirect:/profile?error";
         }
 
