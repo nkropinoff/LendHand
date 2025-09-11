@@ -123,10 +123,10 @@ public class UserService {
         userProfileRepository.save(userProfile);
     }
 
-    public void updateUserAvatar(String email, String avatarURL) {
+    public void updateUserAvatar(String email, String avatarUrl) {
         User user = findUserByEmail(email);
         UserProfile userProfile = user.getUserProfile();
-        userProfile.setAvatarUrl(avatarURL);
+        userProfile.setAvatarUrl(avatarUrl);
         userProfileRepository.save(userProfile);
     }
 }

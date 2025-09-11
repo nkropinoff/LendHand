@@ -28,7 +28,7 @@ public class FileStorageService {
     private String bucketName;
 
     @Value("${minio.url}")
-    private String minioURL;
+    private String minioUrl;
 
     @PostConstruct
     public void init() {
@@ -61,10 +61,10 @@ public class FileStorageService {
         }
     }
 
-    public void deleteFileByURL(String fileURL) {
-        if (fileURL == null || fileURL.isBlank()) return;
+    public void deleteFileByUrl(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) return;
         try {
-            String objectName = fileURL.substring(fileURL.indexOf(bucketName) + bucketName.length() + 1);
+            String objectName = fileUrl.substring(fileUrl.indexOf(bucketName) + bucketName.length() + 1);
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
         } catch (ErrorResponseException e ) {
             if (!e.errorResponse().code().equals("NoSuchKey")) {
@@ -80,8 +80,8 @@ public class FileStorageService {
         return UUID.randomUUID().toString() + "_" + originalFileName.replaceAll("\\s", "_");
     }
 
-    public String buildFileURL(String objectName) {
-        return minioURL.replace("minio", "localhost") + "/" + bucketName + "/" + objectName;
+    public String buildFileUrl(String objectName) {
+        return minioUrl.replace("minio", "localhost") + "/" + bucketName + "/" + objectName;
     }
 
 }
