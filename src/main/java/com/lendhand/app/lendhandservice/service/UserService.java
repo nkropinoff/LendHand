@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -113,13 +114,19 @@ public class UserService {
     }
 
     public void updateUserProfile(String email, UserProfileUpdateDto userProfileUpdateDto) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь с email: " + email + " не найден"));
+        User user = findUserByEmail(email);
         UserProfile userProfile = user.getUserProfile();
 
         userProfile.setLocation(userProfileUpdateDto.getLocation());
         userProfile.setAbout(userProfileUpdateDto.getAbout());
-        userProfile.setAvatarUrl(userProfileUpdateDto.getAvatarUrl());
 
+        userProfileRepository.save(userProfile);
+    }
+
+    public void updateUserAvatar(String email, String avatarURL) {
+        User user = findUserByEmail(email);
+        UserProfile userProfile = user.getUserProfile();
+        userProfile.setAvatarUrl(avatarURL);
         userProfileRepository.save(userProfile);
     }
 }
