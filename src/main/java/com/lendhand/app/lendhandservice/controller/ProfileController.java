@@ -4,6 +4,7 @@ import com.lendhand.app.lendhandservice.dto.UserProfileUpdateDto;
 import com.lendhand.app.lendhandservice.entity.User;
 import com.lendhand.app.lendhandservice.entity.UserProfile;
 import com.lendhand.app.lendhandservice.service.CustomUserDetails;
+import com.lendhand.app.lendhandservice.service.FileStorageService;
 import com.lendhand.app.lendhandservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -24,10 +23,12 @@ import java.security.Principal;
 public class ProfileController {
 
     private final UserService userService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
-    ProfileController(UserService userService) {
+    ProfileController(UserService userService, FileStorageService fileStorageService) {
         this.userService = userService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -44,22 +45,20 @@ public class ProfileController {
             if (userProfile != null) {
                 userProfileUpdateDto.setLocation(userProfile.getLocation());
                 userProfileUpdateDto.setAbout(userProfile.getAbout());
-                userProfileUpdateDto.setAvatarUrl(userProfile.getAvatarUrl());
             }
             model.addAttribute("profileUpdateDto", userProfileUpdateDto);
         }
         return "profile";
     }
 
-    @PostMapping("/update")
-    public String updateProfile(@Valid @ModelAttribute("profileUpdateDto") UserProfileUpdateDto userProfileUpdateDto,
+    @PostMapping("/update/details")
+    public String updateProfileDetails(@Valid @ModelAttribute("profileUpdateDto") UserProfileUpdateDto userProfileUpdateDto,
                                 BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                 RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.profileUpdateDto", bindingResult);
             redirectAttributes.addFlashAttribute("profileUpdateDto", userProfileUpdateDto);
-            redirectAttributes.addFlashAttribute("errorMessage", "Исправьте ошибки в форме.");
-            return "redirect:/profile?error";
+            return "redirect:/profile?error=details";
         }
 
         try {
@@ -67,9 +66,39 @@ public class ProfileController {
             userService.updateUserProfile(email, userProfileUpdateDto);
             redirectAttributes.addFlashAttribute("successMessage", "Профиль успешно обновлен!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при обновлении профиля.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при обновлении деталей профиля.");
         }
 
         return "redirect:/profile";
     }
+
+    @PostMapping("/update/avatar")
+    public String updateProfileAvatar(@RequestParam("avatarFile") MultipartFile avatarFile,
+                                      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                      RedirectAttributes redirectAttributes) {
+
+        if (avatarFile.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Пожалуйста, выберите файл для загрузки.");
+            return "redirect:/profile?error=avatar";
+        }
+
+        try {
+            String email = customUserDetails.getUsername();
+            User user = userService.findUserByEmail(email);
+
+            String oldAvatarUrl = user.getUserProfile().getAvatarUrl();
+            fileStorageService.deleteFileByUrl(oldAvatarUrl);
+
+            String objectName = fileStorageService.uploadFile(avatarFile);
+            String newAvatarUrl = fileStorageService.buildFileUrl(objectName);
+            userService.updateUserAvatar(email, newAvatarUrl);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Аватар профиля успешно обновлен!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при обновлении аватара профиля.");
+        }
+
+        return "redirect:/profile";
+    }
+
 }
