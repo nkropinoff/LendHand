@@ -1,11 +1,10 @@
 package com.lendhand.app.lendhandservice.service;
 
+import com.lendhand.app.lendhandservice.exception.FileNotDeletedException;
 import com.lendhand.app.lendhandservice.exception.FileNotUploadException;
 import com.lendhand.app.lendhandservice.exception.MinioBucketNotInitialized;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
+import io.minio.errors.ErrorResponseException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +26,9 @@ public class FileStorageService {
 
     @Value("${minio.bucket.name}")
     private String bucketName;
+
+    @Value("${minio.url}")
+    private String minioURL;
 
     @PostConstruct
     public void init() {
@@ -59,11 +61,27 @@ public class FileStorageService {
         }
     }
 
+    public void deleteFileByURL(String fileURL) {
+        if (fileURL == null || fileURL.isBlank()) return;
+        try {
+            String objectName = fileURL.substring(fileURL.indexOf(bucketName) + bucketName.length() + 1);
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
+        } catch (ErrorResponseException e ) {
+            if (!e.errorResponse().code().equals("NoSuchKey")) {
+                throw new FileNotDeletedException("File not deleted from MinIO", e);
+            }
+        } catch (Exception e ) {
+            throw new FileNotDeletedException("File not deleted from MinIO", e);
+        }
+    }
+
+
     private String generateObjectName(String originalFileName) {
         return UUID.randomUUID().toString() + "_" + originalFileName.replaceAll("\\s", "_");
     }
 
-
-
+    public String buildFileURL(String objectName) {
+        return minioURL.replace("minio", "localhost") + "/" + bucketName + "/" + objectName;
+    }
 
 }
