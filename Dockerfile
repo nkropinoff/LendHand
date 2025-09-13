@@ -16,7 +16,6 @@ WORKDIR /app
 
 COPY --from=builder /app/target/lendhand-service-0.0.1-SNAPSHOT.jar .
 
-# Указываем порт
 EXPOSE 8080
 
 CMD ["java", "-jar", "lendhand-service-0.0.1-SNAPSHOT.jar"]
