@@ -113,7 +113,7 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь с email: " + email + " не найден"));
     }
 
-    public void updateUserProfile(String email, UserProfileUpdateDto userProfileUpdateDto) {
+    public User updateUserProfile(String email, UserProfileUpdateDto userProfileUpdateDto) {
         User user = findUserByEmail(email);
         UserProfile userProfile = user.getUserProfile();
 
@@ -121,12 +121,14 @@ public class UserService {
         userProfile.setAbout(userProfileUpdateDto.getAbout());
 
         userProfileRepository.save(userProfile);
+        return user;
     }
 
-    public void updateUserAvatar(String email, String avatarUrl) {
+    public User updateUserAvatar(String email, String avatarUrl) {
         User user = findUserByEmail(email);
         UserProfile userProfile = user.getUserProfile();
         userProfile.setAvatarUrl(avatarUrl);
         userProfileRepository.save(userProfile);
+        return user;
     }
 }

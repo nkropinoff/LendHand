@@ -8,7 +8,10 @@ import com.lendhand.app.lendhandservice.service.FileStorageService;
 import com.lendhand.app.lendhandservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,13 +66,25 @@ public class ProfileController {
 
         try {
             String email = customUserDetails.getUsername();
-            userService.updateUserProfile(email, userProfileUpdateDto);
+            User updatedUser = userService.updateUserProfile(email, userProfileUpdateDto);
+            updatePrincipal(updatedUser);
             redirectAttributes.addFlashAttribute("successMessage", "Профиль успешно обновлен!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при обновлении деталей профиля.");
         }
 
         return "redirect:/profile";
+    }
+
+    private void updatePrincipal(User updatedUser) {
+        CustomUserDetails newPrincipal = new CustomUserDetails(updatedUser);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                newPrincipal,
+                authentication.getCredentials(),
+                authentication.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
     @PostMapping("/update/avatar")
@@ -91,7 +106,8 @@ public class ProfileController {
 
             String objectName = fileStorageService.uploadFile(avatarFile);
             String newAvatarUrl = fileStorageService.buildFileUrl(objectName);
-            userService.updateUserAvatar(email, newAvatarUrl);
+            User updatedUser =  userService.updateUserAvatar(email, newAvatarUrl);
+            updatePrincipal(updatedUser);
 
             redirectAttributes.addFlashAttribute("successMessage", "Аватар профиля успешно обновлен!");
         } catch (Exception e) {
