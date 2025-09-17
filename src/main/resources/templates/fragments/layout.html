@@ -28,7 +28,10 @@
 
         <div sec:authorize="isAuthenticated()" class="nav-links user-nav">
             <a th:href="@{/profile}" class="user-profile-link">
-                <div class="user-avatar-placeholder"></div>
+                <div class="user-avatar-nav"
+                     th:styleappend="${#authentication.principal.user.userProfile != null and #authentication.principal.user.userProfile.avatarUrl != null} ?
+                     'background-image: url(' + ${#authentication.principal.user.userProfile.avatarUrl} + ')' : ''">
+                </div>
                 <span sec:authentication="principal.user.username" class="user-name"></span>
             </a>
 
