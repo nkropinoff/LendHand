@@ -26,14 +26,15 @@
                      th:styleappend="${userProfile != null && userProfile.avatarUrl != null ? 'background-image: url(' + userProfile.avatarUrl + ')' : ''}">
                 </div>
 
-                <form th:action="@{/profile/update/avatar}" method="post" enctype="multipart/form-data" style="margin-top: 20px; text-align: center;">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <div class="form-group">
+                <form th:action="@{/profile/update/avatar}" method="post" enctype="multipart/form-data" class="avatar-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="avatar-actions">
                         <label for="avatarFile" class="btn btn-secondary">Изменить аватар</label>
-                        <input type="file" id="avatarFile" name="avatarFile" accept="image/*" style="display: none;">
+                        <input type="file" id="avatarFile" name="avatarFile" accept="image/*" style="display: none;" />
+                        <button type="submit" class="btn btn-primary" id="save-avatar-btn" style="display: none;">Сохранить аватар</button>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="save-avatar-btn" style="display: none; margin-top: 10px;">Сохранить аватар</button>
                 </form>
+
 
                 <h2 class="profile-username" th:text="${user.username}">username</h2>
                 <p class="profile-email" th:text="${user.email}">user@example.com</p>
