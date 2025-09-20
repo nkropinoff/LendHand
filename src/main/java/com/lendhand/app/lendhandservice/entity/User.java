@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @Setter
 @Getter
@@ -27,8 +30,11 @@ public class User {
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserProfile userProfile;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
 
     public User(String username, String email, String passwordHash) {
         this.username = username;
@@ -52,5 +58,15 @@ public class User {
                 ", email='" + email + '\'' +
                 ", emailVerified=" + emailVerified +
                 '}';
+    }
+
+    public void addProduct(Product product) {
+        products.add(product);
+        product.setOwner(this);
+    }
+
+    public void removeProduct(Product product) {
+        products.remove(product);
+        product.setOwner(null);
     }
 }
