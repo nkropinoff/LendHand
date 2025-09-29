@@ -65,9 +65,10 @@ public class ProfileController {
         }
 
         try {
-            String email = customUserDetails.getUsername();
-            User updatedUser = userService.updateUserProfile(email, userProfileUpdateDto);
+            Long userId = customUserDetails.getUserId();
+            User updatedUser = userService.updateUserProfile(userId, userProfileUpdateDto);
             updatePrincipal(updatedUser);
+
             redirectAttributes.addFlashAttribute("successMessage", "Профиль успешно обновлен!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Произошла ошибка при обновлении деталей профиля.");
@@ -98,15 +99,15 @@ public class ProfileController {
         }
 
         try {
-            String email = customUserDetails.getUsername();
-            User user = userService.findUserByEmail(email);
+            Long userId = customUserDetails.getUserId();
+            User user = userService.findUserById(userId);
 
             String oldAvatarUrl = user.getUserProfile().getAvatarUrl();
             fileStorageService.deleteFileByUrl(oldAvatarUrl);
 
             String objectName = fileStorageService.uploadFile(avatarFile);
             String newAvatarUrl = fileStorageService.buildFileUrl(objectName);
-            User updatedUser =  userService.updateUserAvatar(email, newAvatarUrl);
+            User updatedUser =  userService.updateUserAvatar(userId, newAvatarUrl);
             updatePrincipal(updatedUser);
 
             redirectAttributes.addFlashAttribute("successMessage", "Аватар профиля успешно обновлен!");
