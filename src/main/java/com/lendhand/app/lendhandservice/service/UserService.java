@@ -5,10 +5,7 @@ import com.lendhand.app.lendhandservice.dto.UserRegistrationDto;
 import com.lendhand.app.lendhandservice.entity.EmailVerificationToken;
 import com.lendhand.app.lendhandservice.entity.User;
 import com.lendhand.app.lendhandservice.entity.UserProfile;
-import com.lendhand.app.lendhandservice.exception.EmailAlreadyExistsException;
-import com.lendhand.app.lendhandservice.exception.TokenExpiredException;
-import com.lendhand.app.lendhandservice.exception.TokenNotFoundException;
-import com.lendhand.app.lendhandservice.exception.UsernameAlreadyExistsException;
+import com.lendhand.app.lendhandservice.exception.*;
 import com.lendhand.app.lendhandservice.repository.EmailVerificationTokenRepository;
 import com.lendhand.app.lendhandservice.repository.UserProfileRepository;
 import com.lendhand.app.lendhandservice.repository.UserRepository;
@@ -110,11 +107,15 @@ public class UserService {
     }
 
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь с email: " + email + " не найден"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Пользователь с email: " + email + " не найден"));
     }
 
-    public User updateUserProfile(String email, UserProfileUpdateDto userProfileUpdateDto) {
-        User user = findUserByEmail(email);
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким id: " + userId + "не найден"));
+    }
+
+    public User updateUserProfile(Long userId, UserProfileUpdateDto userProfileUpdateDto) {
+        User user = findUserById(userId);
         UserProfile userProfile = user.getUserProfile();
 
         userProfile.setLocation(userProfileUpdateDto.getLocation());
@@ -124,8 +125,8 @@ public class UserService {
         return user;
     }
 
-    public User updateUserAvatar(String email, String avatarUrl) {
-        User user = findUserByEmail(email);
+    public User updateUserAvatar(Long userId, String avatarUrl) {
+        User user = findUserById(userId);
         UserProfile userProfile = user.getUserProfile();
         userProfile.setAvatarUrl(avatarUrl);
         userProfileRepository.save(userProfile);
