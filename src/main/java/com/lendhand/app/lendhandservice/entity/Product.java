@@ -4,6 +4,7 @@ import com.lendhand.app.lendhandservice.entity.enums.ProductCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -49,4 +50,11 @@ public class Product {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public Product(String title, String description, BigDecimal price, ProductCategory category, User owner) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.owner = owner;
+    }
 }
