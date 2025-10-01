@@ -22,7 +22,7 @@ public class ProductService {
     }
 
     public Product createProduct(Long ownerId, ProductCreationDto productCreationDto) {
-        User owner = userRepository.findById(ownerId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким id не существует!"));
+        User owner = userRepository.findById(ownerId).orElseThrow(() -> new UserNotFoundException("Пользователь с таким i: " + ownerId + " не существует!"));
         Product product = new Product(
                 productCreationDto.getTitle(),
                 productCreationDto.getDescription(),
