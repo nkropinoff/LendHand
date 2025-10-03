@@ -1,11 +1,10 @@
 package com.lendhand.app.lendhandservice.entity.enums;
-
-public enum ProductCategory {
-    SERVICE("Услуга"), GOOD("Товар");
+public enum ProductStatus {
+    AVAILABLE("Доступно"), RESERVED("Зарезервировано"), UNAVAILABLE("Недоступно");
 
     private final String displayName;
 
-    ProductCategory(String displayName) {
+    ProductStatus(String displayName) {
         this.displayName = displayName;
     }
 

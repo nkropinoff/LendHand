@@ -1,6 +1,7 @@
 package com.lendhand.app.lendhandservice.entity;
 
 import com.lendhand.app.lendhandservice.entity.enums.ProductCategory;
+import com.lendhand.app.lendhandservice.entity.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,9 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private ProductCategory category;
 
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
@@ -56,5 +60,6 @@ public class Product {
         this.price = price;
         this.category = category;
         this.owner = owner;
+        this.status = ProductStatus.AVAILABLE;
     }
 }
